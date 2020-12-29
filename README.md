@@ -62,12 +62,12 @@ Se você perceber algo de errado ou faltando, por favor abra uma [issue](https:/
 <!--START-SECTION:setup-toc-->
 
 - [Seção 1: Configuração](#seção-1-configuração)
-- [Pré-requisitos](#prerequisites)
-- [Ferramentas iniciais de React + TypeScript](#react--typescript-starter-kits)
-- [Importar React](#import-react)
+- [Pré-requisitos](#pré-requisitos)
+- [Ferramentas iniciais de React + TypeScript](#ferramentas-iniciais-de-react--typeScript)
+- [Importar React](#importar-react)
 <!--END-SECTION:setup-toc-->
-- [Seção 2: Primeiros Passos](#section-2-getting-started)
-  - [Componente de Função](#function-components)
+- [Seção 2: Primeiros Passos](#seção-2-primeiros-passos)
+  - [Componente de Função](#componente-de-função)
   - [Hooks](#hooks)
   - [useState](#usestate)
   - [useReducer](#usereducer)
@@ -132,3 +132,51 @@ Se você perceber algo de errado ou faltando, por favor abra uma [issue](https:/
 </details>
 
 # Seção 1: Configuração
+
+## Pré-requisitos
+
+1. Uma boa compreensão de [React](https://reactjs.org).
+2. Familiaridade com os tipos básicos de [TypeScript](https://www.typescriptlang.org/docs/handbook/basic-types.html) ( [O guia de 2ality](http://2ality.com/2018/04/type-notation-typescript.html) é de grande ajuda. Se você é completamente novato em TypeScript, dê uma olhada no [tutorial de chibicode](https://ts.chibicode.com/todo/) ).
+3. Ter lido [a seção de TypeScript na documentação oficial do React](https://reactjs.org/docs/static-type-checking.html#typescript).
+4. Ter lido [a seção do React do novo playground de TypeScript](http://www.typescriptlang.org/play/index.html?jsx=2&esModuleInterop=true&e=181#example/typescript-with-react) ( Opcional: também acompanhar os mais de 40 exemplos na seção de exemplos do [playground](http://www.typescriptlang.org/play/index.html) ).
+
+Este guia sempre assumirá que você está usando a última versão de Typescript. Notas para versões mais antigas usarão a etiqueta `<details>`.
+
+## Ferramentas iniciais de React + TypeScript
+
+1. [Create React App v2.1+ com Typescript](https://facebook.github.io/create-react-app/docs/adding-typescript): `npx create-react-app my-app --template typescript`
+
+- Costumávamos recomendar `create-react-app-typescript` mas agora o seu uso é [desencorajado](https://www.reddit.com/r/reactjs/comments/a5919a/createreactapptypescript_has_been_archived_rip/). [Consulte as instruções de migração](https://vincenttunru.com/migrate-create-react-app-typescript-to-create-react-app/).
+
+2. [O guia de Basarat](https://github.com/basarat/typescript-react/tree/master/01%20bootstrap) para uma **configuração manual** de React + TypeScript + Webpack + Babel.
+
+- Em particular, certifique-se de ter instalado `@types/react` e `@types/react-dom` .( [Leia mais sobre o projeto DefinitelyTyped caso você não esteja familiarizado](https://definitelytyped.org/) ).
+- Existem também muitos _boilerplates_ de React + Typescript. Por favor consulte [nossa lista de recursos](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet#recommended-react--typescript-codebases-to-learn-from).
+
+## Importar React
+
+```tsx
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+```
+
+Na versões de [TypeScript superiores á 2.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html), você pode rodar TypeScript com `--allowSyntheticDefaultImports` (ou adicionar `"allowSyntheticDefaultImports": true` na tsconfig) para importar como se faz normalmente em jsx:
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+```
+
+<details>
+
+<summary>Explicação</summary>
+
+Por que usar `allowSyntheticDefaultImports` ao invés de `esModuleInterop`? [Daniel Rosenwasser](https://twitter.com/drosenwasser/status/1003097042653073408) comentou que é melhor para webpack/parcel. Para consultar mais argumentos dessa discussão <https://github.com/wmonk/create-react-app-typescript/issues/214>
+
+Por favor, faça um _PR_ ou [abra uma _issue_](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/new) com tuas sugestões.
+
+</details>
+
+# Seção 2: Primeiros Passos
+
+## Componente de Função
