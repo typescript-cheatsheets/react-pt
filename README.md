@@ -53,7 +53,7 @@ Se você perceber algo de errado ou faltando, por favor abra uma [issue](https:/
 
 ---
 
-### Tabela de conteúdo da Cheatsheet básica
+### Tabela de conteúdos da Cheatsheet básica
 
 <details>
 
@@ -131,6 +131,8 @@ Se você perceber algo de errado ou faltando, por favor abra uma [issue](https:/
 
 </details>
 
+<!--START-SECTION:setup-->
+
 # Seção 1: Configuração
 
 ## Pré-requisitos
@@ -144,23 +146,49 @@ Este guia sempre assumirá que você está usando a última versão de Typescrip
 
 ## Ferramentas iniciais de React + TypeScript
 
-1. [Create React App v2.1+ com Typescript](https://facebook.github.io/create-react-app/docs/adding-typescript): `npx create-react-app my-app --template typescript`
+Configurações na nuvem:
 
-- Costumávamos recomendar `create-react-app-typescript` mas agora o seu uso é [desencorajado](https://www.reddit.com/r/reactjs/comments/a5919a/createreactapptypescript_has_been_archived_rip/). [Consulte as instruções de migração](https://vincenttunru.com/migrate-create-react-app-typescript-to-create-react-app/).
+- [Playground do TypeScript com React](https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAKjgQwM5wEoFNkGN4BmUEIcA5FDvmQNwCwAUKJLHAN5wCuqWAyjMhhYANFx4BRAgSz44AXzhES5Snhi1GjLAA8W8XBAB2qeAGEInQ0KjjtycABsscALxwAFAEpXAPnaM4OANjeABtA0sYUR4Yc0iAXVcxPgEhdwAGT3oGAOTJaXx3L19-BkDAgBMIXE4QLCsAOhhgGCckgAMATQsgh2BcAGssCrgAEjYIqwVmutR27MC5LM0yuEoYTihDD1zAgB4K4AA3H13yvbAfbs5e-qGRiYspuBmsVD2Aekuz-YAjThgMCMcCMpj6gxcbGKLj8MTiVnck3gAGo4ABGTxyU6rcrlMF3OB1H5wT7-QFGbG4z6HE65ZYMOSMIA) apenas se você estiver depurando tipos (e relatando problemas), não para executar código.
+- [CodeSandbox](http://ts.react.new) - IDE na nuvem, inicializa super rápido.
+- [Stackblitz](https://stackblitz.com/edit/react-typescript-base) - IDE na nuvem, inicializa super rápido.
 
-2. [O guia de Basarat](https://github.com/basarat/typescript-react/tree/master/01%20bootstrap) para uma **configuração manual** de React + TypeScript + Webpack + Babel.
+Configurações de desenvolvimento local:
 
+- [Next.js](https://nextjs.org/docs/basic-features/typescript): `npx create-next-app -e with-typescript` irá criar no seu diretório atual.
+- [Create React App](https://facebook.github.io/create-react-app/docs/adding-typescript): `npx create-react-app name-of-app --template typescript` irá criar em um novo diretório.
+- [Meteor](https://guide.meteor.com/build-tool.html#typescript): `meteor create --typescript name-of-my-new-typescript-app`
+- [Ignite](https://github.com/infinitered/ignite#use-ignite-andross-infinite-red-andross-boilerplate) para React Native: `ignite new myapp`
+- [TSDX](https://tsdx.io/): `npx tsdx create mylib` para Creating React+TS _libraries_
+
+<details>
+<summary>
+Outras ferramentas
+</summary>
+
+Ferramentas menos maduras mas que vale a pena conferir:
+
+- [Vite](https://twitter.com/swyx/status/1282727239230996480?lang=en): `npm init vite-app my-react-project --template react-ts` (nota - ainda não está na versão v1.0, mas é muito rápida).
+- [Snowpack](<https://www.snowpack.dev/#create-snowpack-app-(csa)>): `npx create-snowpack-app my-app --template app-template-react-typescript`
+- [Docusaurus v2](https://v2.docusaurus.io/docs/installation) com [suporte a TypeScript](https://v2.docusaurus.io/docs/typescript-support)
+- [Parcel](https://v2.parceljs.org/languages/typescript/)
+- [JP Morgan's `modular`](https://github.com/jpmorganchase/modular): CRA + TS + Yarn Workspaces toolkit. `yarn create modular-react-app <project-name>`
+
+Manual de configuração:
+
+- [O guia de Basarat](https://github.com/basarat/typescript-react/tree/master/01%20bootstrap) para uma **configuração manual** de React + TypeScript + Webpack + Babel.
 - Em particular, certifique-se de ter instalado `@types/react` e `@types/react-dom` .( [Leia mais sobre o projeto DefinitelyTyped caso você não esteja familiarizado](https://definitelytyped.org/) ).
-- Existem também muitos _boilerplates_ de React + Typescript. Por favor consulte [nossa lista de recursos](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet#recommended-react--typescript-codebases-to-learn-from).
+- Existem também muitos _boilerplates_ de React + Typescript. Por favor consulte [nossa lista de outros recursos](https://react-typescript-cheatsheet.netlify.app/docs/basic/recommended/resources/).
 
-## Importar React
+</details>
+
+## Import React
 
 ```tsx
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 ```
 
-Na versões de [TypeScript superiores á 2.7](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html), você pode rodar TypeScript com `--allowSyntheticDefaultImports` (ou adicionar `"allowSyntheticDefaultImports": true` na tsconfig) para importar como se faz normalmente em jsx:
+Este é o [caminho mais seguro no futuro](https://www.reddit.com/r/reactjs/comments/iyehol/import_react_from_react_will_go_away_in_distant/) para importar React. Se você definir `--allowSyntheticDefaultImports` (ou adicionar` "allowSyntheticDefaultImports": true`) em seu `tsconfig.json`, você poderá importar como se faz normalmente em jsx:
 
 ```tsx
 import React from 'react';
@@ -173,9 +201,11 @@ import ReactDOM from 'react-dom';
 
 Por que usar `allowSyntheticDefaultImports` ao invés de `esModuleInterop`? [Daniel Rosenwasser](https://twitter.com/drosenwasser/status/1003097042653073408) comentou que é melhor para webpack/parcel. Para consultar mais argumentos dessa discussão <https://github.com/wmonk/create-react-app-typescript/issues/214>
 
-Por favor, faça um _PR_ ou [abra uma _issue_](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/new) com tuas sugestões.
+Você também deveria verificar [a nova documentação do TypeScript para descrições oficiais entre cada _flag_ do compilador](https://www.typescriptlang.org/tsconfig#allowSyntheticDefaultImports)!
 
 </details>
+
+<!--END-SECTION:setup-->
 
 # Seção 2: Primeiros Passos
 
