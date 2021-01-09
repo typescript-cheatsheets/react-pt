@@ -242,6 +242,8 @@ Algumas diferenças da versão de "função normal":
 
 - Observe que existem alguns problemas conhecidos usando `defaultProps` com` React.FunctionComponent`. Consulte [este problema para obter detalhes] (https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/87). Nós mantemos uma seção `defaultProps` separada para que você também possa consultar.
 
+- Fornece uma definição implícita de `children` (veja abaixo) - no entanto, há alguns problemas com o tipo `children` implícito (por exemplo, DefinitelyTyped#33006), e é melhor ser explícito sobre os componentes que consomem `children`, de qualquer maneira.
+
 ```tsx
 const Title: React.FunctionComponent<{ title: string }> = ({
   children,
