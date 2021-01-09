@@ -207,6 +207,127 @@ Você também deveria verificar [a nova documentação do TypeScript para descri
 
 <!--END-SECTION:setup-->
 
+<!--START-SECTION:function-components-->
+
 # Seção 2: Primeiros Passos
 
 ## Componente de Função
+
+Podem ser escritos como funções normais que recebem `props` como argumento e retornam um elemento JSX.
+
+```tsx
+type AppProps = { message: string }; /* também se pode usar uma interface */
+const App = ({ message }: AppProps) => <div>{message}</div>;
+```
+
+<details>
+
+<summary><b>Por que `React.FC` é desencorajado? E sobre `React.FunctionComponent` / `React.VoidFunctionComponent`?</b></summary>
+
+Você pode ver isso em muitas bases de código React + TypeScript:
+
+```tsx
+const App: React.FunctionComponent<{ message: string }> = ({ message }) => (
+  <div>{message}</div>
+);
+```
+
+No entanto, o consenso geral hoje é que o uso de `React.FunctionComponent` (ou a abreviação` React.FC`) é [desencorajado] (https://github.com/facebook/create-react-app/pull/8177). Isto é um ponto de vista, é claro, mas se você concorda e deseja remover `React.FC` da sua base de código, você pode usar [este jscodeshift codemod] (https://github.com/gndelia/codemod-replace-react- fc-typescript).
+
+Algumas diferenças da versão de "função normal":
+
+- `React.FunctionComponent` é explícito sobre o tipo de retorno, enquanto a versão normal da função é implícita (ou então precisa de anotações adicionais).
+
+- Fornece verificação de tipos e preenchimento automático para propriedades estáticas como `displayName`,` propTypes` e `defaultProps`.
+
+  - Observe que existem alguns problemas conhecidos usando `defaultProps` com` React.FunctionComponent`. Consulte [este problema para obter detalhes] (https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/87). Nós mantemos uma seção `defaultProps` separada para que você também possa consultar.
+
+- Fornece uma definição implícita de `children` (veja abaixo) - no entanto, há alguns problemas com o tipo `children` implícito (por exemplo, DefinitelyTyped#33006), e é melhor ser explícito sobre os componentes que consomem `children`, de qualquer maneira.
+
+```tsx
+const Title: React.FunctionComponent<{ title: string }> = ({
+  children,
+  title,
+}) => <div title={title}>{children}</div>;
+```
+
+<details>
+<summary>
+Usando `React.VoidFunctionComponent` ou` React.VFC` como alternativa
+</summary>
+
+A partir da versão [@types/react 16.9.48] (https://github.com/DefinitelyTyped/DefinitelyTyped/pull/46643), você também poderá usar o tipo `React.VoidFunctionComponent` ou `React.VFC` se quiser tipar `children` explicitamente. Esta é uma solução provisória até que `FunctionComponent` não aceite nenhum `children` por padrão (planejado para `@types/react@^18.0.0`).
+
+```ts
+type Props = { foo: string };
+
+// OK agora mas futuramente causará erro
+const FunctionComponent: React.FunctionComponent<Props> = ({
+  foo,
+  children,
+}: Props) => {
+  return (
+    <div>
+      {foo} {children}
+    </div>
+  ); // OK
+};
+
+// OK agora mas futuramente se tornará obsoleto
+const VoidFunctionComponent: React.VoidFunctionComponent<Props> = ({
+  foo,
+  children,
+}) => {
+  return (
+    <div>
+      {foo}
+      {children}
+    </div>
+  );
+};
+```
+
+</details>
+- _No futuro_, ele poderá marcar automaticamente os `props` como `readonly` (somente leitura), embora isso seja um ponto discutível se o objeto `props` for desestruturado na lista de parâmetros.
+
+Na maioria dos casos, faz pouca diferença qual sintaxe é usada, mas você pode preferir a natureza mais explícita de `React.FunctionComponent`.
+
+</details>
+
+<details>
+<summary><b>Problemas menores</b></summary>
+
+Esses padrões não são suportados:
+
+** Renderização condicional **
+
+```tsx
+const MyConditionalComponent = ({ shouldRender = false }) =>
+  shouldRender ? <div /> : false; // tampouco faça isso em JS
+const el = <MyConditionalComponent />; // gera um erro
+```
+
+Isso ocorre porque, devido às limitações do compilador, os componentes de função não podem retornar nada além de uma expressão JSX ou `null`, caso contrário, ele reclama com uma mensagem de erro enigmática dizendo que outro tipo não pode ser atribuído ao Elemento.
+
+```tsx
+const MyArrayComponent = () => Array(5).fill(<div />);
+const el2 = <MyArrayComponent />; // gera um erro
+```
+
+**Array.fill**
+
+Infelizmente, apenas anotar o tipo de função não vai ajudar, então se você realmente precisar retornar outros tipos exóticos que o React suporta, será necessário executar uma declaração de tipo:
+
+```tsx
+const MyArrayComponent = () => (Array(5).fill(<div />) as any) as JSX.Element;
+```
+
+[Veja o comentário de @ferdaber aqui] (https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/57).
+
+</details>
+
+<!--END-SECTION:function-components-->
+
+<!--START-SECTION:hooks-->
+
+## Hooks
