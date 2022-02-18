@@ -364,7 +364,7 @@ const [user, setUser] = React.useState<IUser>({} as IUser);
 setUser(newUser);
 ```
 
-"Mentimos" temporariamente para o compilador de Typesctipr que `{}` é do tipo `IUser`. Você deve então configurar o estado de `user` — se não o fizer, o resto do seu código pode depender do fato de que `user` é do tipo `IUser` e isso pode levar a erros em tempo de execução (runtime errors).
+"Mentimos" temporariamente para o compilador de Typescript que `{}` é do tipo `IUser`. Você deve então configurar o estado de `user` — se não o fizer, o resto do seu código pode depender do fato de que `user` é do tipo `IUser` e isso pode levar a erros em tempo de execução (runtime errors).
 
 ## useReducer
 
