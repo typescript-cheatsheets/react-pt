@@ -505,9 +505,7 @@ Observe que você está desativando a segurança de tipo aqui - você terá um e
 
 <details>
 <summary>
-  
 Dica: Escolhendo qual `HTMLElement` usar
-  
 </summary>
 
 Refs demandam especificidade - não é suficiente apenas especificar qualquer `HTMLElement` antigo. Se você não souber o nome do tipo de elemento necessário, verifique [lib.dom.ts](https://github.com/microsoft/TypeScript/blob/v3.9.5/lib/lib.dom. d.ts#L19224-L19343) ou cometa um erro de tipo intencional e deixe o compilador lhe dizer o tipo correto:
