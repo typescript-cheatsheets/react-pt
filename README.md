@@ -494,7 +494,7 @@ function Foo() {
 
 Se você tem certeza de que `divRef.current` nunca será nulo, também é possível usar o operador de asserção não nulo `!`:
 
-```
+```tsx
 const divRef = useRef<HTMLDivElement>(null!);
 // Mais tarde... não precisa checar se o elemento é nulo
 doSomethingWith(divRef.current);
