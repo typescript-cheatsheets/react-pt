@@ -351,7 +351,7 @@ No entanto, muitos hooks são inicializados com valores nulos e você pode se pe
 ```tsx
 const [user, setUser] = React.useState<IUser | null>(null);
 
-// mais tarde...
+// mais adiante...
 setUser(newUser);
 ```
 
@@ -360,7 +360,7 @@ Você também pode usar asserções de tipo (type assertions) se um estado for i
 ```tsx
 const [user, setUser] = React.useState<IUser>({} as IUser);
 
-// mais tarde...
+// mais adiante...
 setUser(newUser);
 ```
 
