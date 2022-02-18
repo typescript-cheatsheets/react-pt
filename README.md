@@ -424,7 +424,7 @@ export function reducer: Reducer<AppState, Action>() {}
 
 ## useEffect / useLayoutEffect
 
-Ambos `useEffect` e `useLayoutEffect` são usados para executar <b>efeitos colaterais</b> e retornam uma função de limpeza opcional, o que significa que se eles não lidam com retorn de valores, nenhum tipo é necessário. Ao usar `useEffect`, tome cuidado para não retornar nada além de uma função ou `undefined`, caso contrário, tanto o TypeScript quanto o React apresentarão error. Isso pode ser sutil ao usar arrow functions:
+Ambos `useEffect` e `useLayoutEffect` são usados para executar <b>efeitos colaterais</b> e retornam uma função de limpeza opcional, o que significa que se eles não lidam com retorno de valores, nenhum tipo é necessário. Ao usar `useEffect`, tome cuidado para não retornar nada além de uma função ou `undefined`, caso contrário, tanto o TypeScript quanto o React apresentarão error. Isso pode ser sutil ao usar arrow functions:
 
 ```ts
 function DelayedEffect(props: { timerMs: number }) {
@@ -466,8 +466,9 @@ function DelayedEffect(props: { timerMs: number }) {
 
 ## useRef
 
-Em TypeScript, `useRef` retorn uma referência que pode ser [somente leitura](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/abd69803c1b710db58d511f4544ec1b70bc9077c/types/react/v16/index.d.ts#L1025-L1039) ou [mutável](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/abd69803c1b710db58d511f4544ec1b70bc9077c/types/react/v16/index.d.ts#L1012-L1023), a depender se o tipo fornecido cobre totalmente o valor inicial ou não. Escolha um que se adapte ao seu caso de uso.
-### Opção um 1: ref de um elemento da DOM
+Em TypeScript, `useRef` retorna uma referência que pode ser [somente leitura](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/abd69803c1b710db58d511f4544ec1b70bc9077c/types/react/v16/index.d.ts#L1025-L1039) ou [mutável](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/abd69803c1b710db58d511f4544ec1b70bc9077c/types/react/v16/index.d.ts#L1012-L1023), a depender se o tipo fornecido cobre totalmente o valor inicial ou não. Escolha um que se adapte ao seu caso de uso.
+
+### Opção 1: ref de um elemento da DOM
 
 **[Para acessar um elemento da DOM](https://reactjs.org/docs/refs-and-the-dom.html):** forneça apenas o tipo de elemento como argumento e use `null` como valor inicial. Neste caso, a referência retornada terá um `.current` somente leitura que é gerenciado pelo React. O TypeScript espera que você dê esta referência à prop `ref` de um elemento:
 
@@ -505,7 +506,7 @@ Observe que você está desativando a segurança de tipo aqui - você terá um e
 <details>
 <summary>
   
-  Dica: Escolhendo qual `HTMLElement` usar
+Dica: Escolhendo qual `HTMLElement` usar
   
 </summary>
 
@@ -524,7 +525,7 @@ function Foo() {
   // Tecnicamente, isto retorna MutableRefObject<number | null>
   const intervalRef = useRef<number | null>(null);
 
-  // Você mesmo genrencia a ref (por isso se chama MutableRefObject!)
+  // Você mesmo gerência a ref (por isso se chama MutableRefObject!)
   useEffect(() => {
     intervalRef.current = setInterval(...);
     return () => clearInterval(intervalRef.current);
