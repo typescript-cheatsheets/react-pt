@@ -331,3 +331,210 @@ const MyArrayComponent = () => (Array(5).fill(<div />) as any) as JSX.Element;
 <!--START-SECTION:hooks-->
 
 ## Hooks
+
+Há suporte para Hooks em [`@types/react` a partir da versão v16.8](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/a05cc538a42243c632f054e42eab483ebf1560ab/types/react/index.d.ts#L800-L1031).
+
+## useState
+
+Inferência automática de tipos funciona bem com valores simples
+
+```tsx
+const [val, toggle] = React.useState(false);
+//  infere-se que `val` é do tipo boolean
+// `toggle` aceita apenas booleans
+```
+
+Veja também no artigo em inglês (utilizando [Using Inferred Types](https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/#using-inferred-types) se precisar usar um tipo complexo para o qual você depende da inferência.
+
+No entanto, muitos hooks são inicializados com valores nulos e você pode se perguntar como deve fazer para definir o tipo. Declare explicitamente o tipo e use um tipo de união (union type):
+
+```tsx
+const [user, setUser] = React.useState<IUser | null>(null);
+
+// mais adiante...
+setUser(newUser);
+```
+
+Você também pode usar asserções de tipo (type assertions) se um estado for inicializado logo após o setup e sempre tiver um valor definido após o setup:
+
+```tsx
+const [user, setUser] = React.useState<IUser>({} as IUser);
+
+// mais adiante...
+setUser(newUser);
+```
+
+"Mentimos" temporariamente para o compilador de Typescript que `{}` é do tipo `IUser`. Você deve então configurar o estado de `user` — se não o fizer, o resto do seu código pode depender do fato de que `user` é do tipo `IUser` e isso pode levar a erros em tempo de execução (runtime errors).
+
+## useReducer
+
+Você pode utilizar Uniões de tipos com propriedades definidas ([Discriminated Unions](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions)) para actions da função reducer. Não esqueça de definir o tipo de retorno, caso contário, o compilador irá inferir o tipo.
+
+```tsx
+const initialState = { count: 0 };
+
+type ACTIONTYPE =
+  | { type: "increment"; payload: number }
+  | { type: "decrement"; payload: string };
+
+function reducer(state: typeof initialState, action: ACTIONTYPE) {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + action.payload };
+    case "decrement":
+      return { count: state.count - Number(action.payload) };
+    default:
+      throw new Error();
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = React.useReducer(reducer, initialState);
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({ type: "decrement", payload: "5" })}>
+        -
+      </button>
+      <button onClick={() => dispatch({ type: "increment", payload: 5 })}>
+        +
+      </button>
+    </>
+  );
+}
+```
+
+[Veja no TypeScript Playground](https://www.typescriptlang.org/play?#code/LAKFEsFsAcHsCcAuACAVMghgZ2QJQKYYDGKAZvLJMgOTyEnUDcooRsAdliuO+IuBgA2AZUQZE+ZAF5kAbzYBXdogBcyAAwBfZmBCIAntEkBBAMIAVAJIB5AHLmAmgAUAotOShkyAD5zkBozVqHiI6SHxlagAaZGgMfUFYDAATNXYFSAAjfHhNDxAvX1l-Q3wg5PxQ-HDImLiEpNTkLngeAHM8ll1SJRJwDmQ6ZIUiHIAKLnEykqNYUmQePgERMQkY4n4ONTMrO0dXAEo5T2aAdz4iAAtkMY3+9gA6APwj2ROvImxJYPYqmsRqCp3l5BvhEAp4Ow5IplGpJhIHjCUABqTB9DgPeqJFLaYGfLDfCp-CIAoEFEFeOjgyHQ2BKVTNVb4RF05TIAC0yFsGWy8Fu6MeWMaB1x5K8FVIGAUglUwK8iEuFFOyHY+GVLngFD5Bx0Xk0oH13V6myhplZEm1x3JbE4KAA2vD8DFkuAsHFEFcALruAgbB4KAkEYajPlDEY5GKLfhCURTHUnKkQqFjYEAHgAfHLkGb6WpZI6WfTDRSvKnMgpEIgBhxTIJwEQANZSWRjI5SdPIF1u8RXMayZ7lSphEnRWLxbFNagAVmomhF6fZqYA9OXKxxM2KQWWK1WoTW643m63pB2u+7e-3SkEQsPamOGik1FO55p08jl6vdxuKcvv8h4yAmhAA)
+
+<details>
+
+<summary><b>Uso do tipo `Reducer` da biblioteca `redux`</b></summary>
+
+Caso você use a biblioteca [redux](https://github.com/reduxjs/redux) para escrever a reducer function, ela fornece um helper conveniente do formato `Reducer<State, Action>` que cuida do tipo do retorno para você.
+
+Assim, o exemplo de reducer acima se torna:
+
+```tsx
+import { Reducer } from 'redux';
+
+export function reducer: Reducer<AppState, Action>() {}
+```
+
+</details>
+
+## useEffect / useLayoutEffect
+
+Ambos `useEffect` e `useLayoutEffect` são usados para executar <b>efeitos colaterais</b> e retornam uma função de limpeza opcional, o que significa que se eles não lidam com retorno de valores, nenhum tipo é necessário. Ao usar `useEffect`, tome cuidado para não retornar nada além de uma função ou `undefined`, caso contrário, tanto o TypeScript quanto o React apresentarão error. Isso pode ser sutil ao usar arrow functions:
+
+```ts
+function DelayedEffect(props: { timerMs: number }) {
+  const { timerMs } = props;
+
+  useEffect(
+    () =>
+      setTimeout(() => {
+        /* faça coisas aqui */
+      }, timerMs),
+    [timerMs]
+  );
+  // um exemplo ruim! setTimeout implicitamente retorna número (tipo number)
+  // porque o corpo da arrow function não está entre chaves
+  return null;
+}
+```
+
+<details>
+<summary>
+Solução para o exemplo acima
+</summary>
+
+```tsx
+function DelayedEffect(props: { timerMs: number }) {
+  const { timerMs } = props;
+
+  useEffect(() => {
+    setTimeout(() => {
+      /* faça coisas aqui */
+    }, timerMs);
+  }, [timerMs]);
+  // melhor; utilize a keyword void para ter certeza de que retornará undefined
+  return null;
+}
+```
+
+</details>
+
+## useRef
+
+Em TypeScript, `useRef` retorna uma referência que pode ser [somente leitura](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/abd69803c1b710db58d511f4544ec1b70bc9077c/types/react/v16/index.d.ts#L1025-L1039) ou [mutável](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/abd69803c1b710db58d511f4544ec1b70bc9077c/types/react/v16/index.d.ts#L1012-L1023), a depender se o tipo fornecido cobre totalmente o valor inicial ou não. Escolha um que se adapte ao seu caso de uso.
+
+### Opção 1: ref de um elemento da DOM
+
+**[Para acessar um elemento da DOM](https://reactjs.org/docs/refs-and-the-dom.html):** forneça apenas o tipo de elemento como argumento e use `null` como valor inicial. Neste caso, a referência retornada terá um `.current` somente leitura que é gerenciado pelo React. O TypeScript espera que você dê esta referência à prop `ref` de um elemento:
+
+```tsx
+function Foo() {
+  // - Se possível, seja o mais específico possível. Por exemplo, HTMLDivElement
+  // é melhor que HTMLElement e muito melhor que Element.
+  // - Em termos técnicos, isso retorna RefObject<HTMLDivElement>
+  const divRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Observe que ref.current pode ser null. Isso é esperado, porque você pode
+    // renderizar condicionalmente o elemento da ref, ou você poderia esquecer de atribuí-lo a um elemento
+    if (!divRef.current) throw Error("divRef is not assigned");
+
+    // Agora você tem certeza que divRef.current é um HTMLDivElement
+    doSomethingWith(divRef.current);
+  });
+
+  // Atribua a ref a um elemento para que o React possa gerenciar-lo pra você
+  return <div ref={divRef}>etc</div>;
+}
+```
+
+Se você tem certeza de que `divRef.current` nunca será nulo, também é possível usar o operador de asserção não nulo `!`:
+
+```tsx
+const divRef = useRef<HTMLDivElement>(null!);
+// Mais tarde... não precisa checar se o elemento é nulo
+doSomethingWith(divRef.current);
+```
+
+Observe que você está desativando a segurança de tipo aqui - você terá um erro de tempo de execução se esquecer de atribuir a referência a um elemento na renderização ou se o elemento com ref for renderizado condicionalmente.
+
+<details>
+<summary>
+Dica: Escolhendo qual `HTMLElement` usar
+</summary>
+
+Refs demandam especificidade - não é suficiente apenas especificar qualquer `HTMLElement` antigo. Se você não souber o nome do tipo de elemento necessário, verifique [lib.dom.ts](https://github.com/microsoft/TypeScript/blob/v3.9.5/lib/lib.dom. d.ts#L19224-L19343) ou cometa um erro de tipo intencional e deixe o compilador lhe dizer o tipo correto:
+
+![image](https://user-images.githubusercontent.com/6764957/116914284-1c436380-ac7d-11eb-9150-f52c571c5f07.png)
+
+</details>
+
+### Opção 2: Valor ref mutável
+
+**[Para ter um valor mutável](https://reactjs.org/docs/hooks-faq.html#is-there-something-like-instance-variables):** forneça o tipo desejado e verifique se o valor inicial pertence totalmente a esse tipo:
+
+```tsx
+function Foo() {
+  // Tecnicamente, isto retorna MutableRefObject<number | null>
+  const intervalRef = useRef<number | null>(null);
+
+  // Você mesmo gerência a ref (por isso se chama MutableRefObject!)
+  useEffect(() => {
+    intervalRef.current = setInterval(...);
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  // A ref (intervalRef) não é passado para a prop "ref" de nenhum elemento
+  return <button onClick={/* clearInterval the ref */}>Cancel timer</button>;
+}
+```
+
+### Veja também (conteúdo em inglês)
+
+- [Issue relacionada por @rajivpunjabi](https://github.com/typescript-cheatsheets/react/issues/388) - [Playground](https://www.typescriptlang.org/play#code/JYWwDg9gTgLgBAKjgQwM5wEoFNkGN4BmUEIcARFDvmQNwCwAUI7hAHarwCCYYcAvHAAUASn4A+OAG9GjOHAD0CBLLnKGcxHABiwKBzgQwMYGxS4WUACbBWAczgwIcSxFwBXEFlYxkxtgDoVTQBJVmBjZAAbOAA3KLcsOAB3YEjogCNE1jc0-zgAGQBPG3tHOAAVQrAsAGVcKGAjOHTCuDdUErhWNgBabLSUVFQsWBNWA2qoX2hA9VU4AGFKXyx0AFk3H3TIxOwCOAB5dIArLHwgpHcoSm84MGJJmFbgdG74ZcsDVkjC2Y01f7yFQsdjvLAEACM-EwVBg-naWD2AB4ABLlNb5GpgZCsACiO083jEgn6kQAhMJ6HMQfpKJCFpE2IkBNg8HCEci0RisTj8VhCTBiaSKVSVIoAaoLnBQuFgFFYvFEikBpkujkMps4FgAB7VfCdLmY7F4gleOFwAByEHg7U63VYfXVg2Go1MhhG0ygf3mAHVUtF6jgYLtwUdTvguta4Bstjs9mGznCpVcbvB7u7YM90B8vj9vYgLkDqWxaeCAEzQ1n4eHDTnoo2801EknqykyObii5SmpnNifA5GMZmCzWOwOJwudwC3xjKUyiLROKRBLJf3NLJO9KanV64xj0koVifQ08k38s1Sv0DJZBxIx5DbRGhk6J5Nua5mu4PEZPOAvSNgsgnxsHmXZzIgRZyDSYIEAAzJWsI1k+BCovWp58gKcAAD5qmkQqtqKHbyCexoYRecw7IQugcAs76ptCdIQv4KZmoRcjyMRaGkU28A4aSKiUXAwwgpYtEfrcAh0mWzF0ax7bsZx3Lceetx8eqAlYPAMAABa6KJskSXAdKwTJ4kwGxCjyKy-bfK05SrDA8mWVagHAbZeScOY0CjqUE6uOgqDaRAOSfKqOYgb8KiMaZ9GSeCEIMkyMVyUwRHWYc7nSvAgUQEk6AjMQXpReWyWGdFLHeBZHEuTCQEZT8xVwaV8BxZCzUWZQMDvuMghBHASJVnCWhTLYApiH1chIqgxpGeCfCSIxAC+Yj3o+8YvvgSLyNNOLjeBGhTTNdLzVJy3reGMBbTtrB7RoB3XbNBAneCsHLatcbPhdV3GrdB1WYhw3IKNZq-W2DCLYRO7QPAljgsgORcDwVJAA)
+- [Exemplo de Stefan Baumgartner](https://fettblog.eu/typescript-react/hooks/#useref) - [Playground](https://www.typescriptlang.org/play/?jsx=2#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgIilQ3wFgAoCzAVwDsNgJa4AVJADxgElaxqYA6sBgALAGIQ01AM4AhfjCYAKAJRwA3hThwA9DrjBaw4CgA2waUjgB3YSLi1qp0wBo4AI35wYSZ6wCeYEgAymhQwGDw1lYoRHCmEBAA1oYA5nCY0HAozAASLACyADI8fDAAoqZIIEi0MFpwaEzS8IZllXAAvIjEMAB0MkjImAA8+cWl-JXVtTAAfEqOzioA3A1NtC1wTPIwirQAwuZoSV1wql1zGg3aenAt4RgOTqaNIkgn0g5ISAAmcDJvBA3h9TsBMAZeFNXjl-lIoEQ6nAOBZ+jddPpPPAmGgrPDEfAUS1pG5hAYvhAITBAlZxiUoRUqjU6m5RIDhOi7iIUF9RFYaqIIP9MlJpABCOCAUHJ0eDzm1oXAAGSKyHtUx9fGzNSacjaPWq6Ea6gI2Z9EUyVRrXV6gC+DRtVu0RBgxuYSnRIzm6O06h0ACpIdlfr9jExSQyOkxTP5GjkPFZBv9bKIDYSmbNpH04ABNFD+CV+nR2636kby+BETCddTlyo27w0zr4HycfC6L0lvUjLH7baHY5Jas7BRMI7AE42uYSUXed6pkY6HtMDulnQruCrCg2oA)
