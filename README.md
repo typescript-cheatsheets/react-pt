@@ -560,7 +560,6 @@ function List<ItemType>(props: ListProps<ItemType>) {
 ## Custom Hooks
 
 Se você estiver retornando um array em seu Custom Hook (hooks customizados), você vai querer evitar a inferência de tipo, pois o TypeScript irá inferir um tipo de união (quando, na verdade, você quer tipos diferentes em cada posição do array). Em vez disso, use [const assertions do TypeScript 3.4](https://devblogs.microsoft.com/typescript/announcing-typescript-3-4/#const-assertions):
-If you are returning an array in your Custom Hook, you will want to avoid type inference as TypeScript will infer a union type (when you actually want different types in each position of the array). Instead, use [TS 3.4 const assertions](https://devblogs.microsoft.com/typescript/announcing-typescript-3-4/#const-assertions):
 
 ```tsx
 export function useLoading() {
