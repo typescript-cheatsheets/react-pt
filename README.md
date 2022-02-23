@@ -541,7 +541,7 @@ function Foo() {
 
 ## useImperativeHandle
 
-_Não temos muito ainda sobre esse tema, [há uma discussão nas issues da versão em inglês](https://github.com/typescript-cheatsheets/react/issues/106).Por favor, contribua se puder!_
+_Não temos muito ainda sobre esse tema, [há uma discussão nas issues do repositório original](https://github.com/typescript-cheatsheets/react/issues/106). Por favor, contribua se puder!_
 
 ```tsx
 type ListProps<ItemType> = {
