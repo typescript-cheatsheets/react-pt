@@ -538,3 +538,101 @@ function Foo() {
 
 - [Issue relacionada por @rajivpunjabi](https://github.com/typescript-cheatsheets/react/issues/388) - [Playground](https://www.typescriptlang.org/play#code/JYWwDg9gTgLgBAKjgQwM5wEoFNkGN4BmUEIcARFDvmQNwCwAUI7hAHarwCCYYcAvHAAUASn4A+OAG9GjOHAD0CBLLnKGcxHABiwKBzgQwMYGxS4WUACbBWAczgwIcSxFwBXEFlYxkxtgDoVTQBJVmBjZAAbOAA3KLcsOAB3YEjogCNE1jc0-zgAGQBPG3tHOAAVQrAsAGVcKGAjOHTCuDdUErhWNgBabLSUVFQsWBNWA2qoX2hA9VU4AGFKXyx0AFk3H3TIxOwCOAB5dIArLHwgpHcoSm84MGJJmFbgdG74ZcsDVkjC2Y01f7yFQsdjvLAEACM-EwVBg-naWD2AB4ABLlNb5GpgZCsACiO083jEgn6kQAhMJ6HMQfpKJCFpE2IkBNg8HCEci0RisTj8VhCTBiaSKVSVIoAaoLnBQuFgFFYvFEikBpkujkMps4FgAB7VfCdLmY7F4gleOFwAByEHg7U63VYfXVg2Go1MhhG0ygf3mAHVUtF6jgYLtwUdTvguta4Bstjs9mGznCpVcbvB7u7YM90B8vj9vYgLkDqWxaeCAEzQ1n4eHDTnoo2801EknqykyObii5SmpnNifA5GMZmCzWOwOJwudwC3xjKUyiLROKRBLJf3NLJO9KanV64xj0koVifQ08k38s1Sv0DJZBxIx5DbRGhk6J5Nua5mu4PEZPOAvSNgsgnxsHmXZzIgRZyDSYIEAAzJWsI1k+BCovWp58gKcAAD5qmkQqtqKHbyCexoYRecw7IQugcAs76ptCdIQv4KZmoRcjyMRaGkU28A4aSKiUXAwwgpYtEfrcAh0mWzF0ax7bsZx3Lceetx8eqAlYPAMAABa6KJskSXAdKwTJ4kwGxCjyKy-bfK05SrDA8mWVagHAbZeScOY0CjqUE6uOgqDaRAOSfKqOYgb8KiMaZ9GSeCEIMkyMVyUwRHWYc7nSvAgUQEk6AjMQXpReWyWGdFLHeBZHEuTCQEZT8xVwaV8BxZCzUWZQMDvuMghBHASJVnCWhTLYApiH1chIqgxpGeCfCSIxAC+Yj3o+8YvvgSLyNNOLjeBGhTTNdLzVJy3reGMBbTtrB7RoB3XbNBAneCsHLatcbPhdV3GrdB1WYhw3IKNZq-W2DCLYRO7QPAljgsgORcDwVJAA)
 - [Exemplo de Stefan Baumgartner](https://fettblog.eu/typescript-react/hooks/#useref) - [Playground](https://www.typescriptlang.org/play/?jsx=2#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgIilQ3wFgAoCzAVwDsNgJa4AVJADxgElaxqYA6sBgALAGIQ01AM4AhfjCYAKAJRwA3hThwA9DrjBaw4CgA2waUjgB3YSLi1qp0wBo4AI35wYSZ6wCeYEgAymhQwGDw1lYoRHCmEBAA1oYA5nCY0HAozAASLACyADI8fDAAoqZIIEi0MFpwaEzS8IZllXAAvIjEMAB0MkjImAA8+cWl-JXVtTAAfEqOzioA3A1NtC1wTPIwirQAwuZoSV1wql1zGg3aenAt4RgOTqaNIkgn0g5ISAAmcDJvBA3h9TsBMAZeFNXjl-lIoEQ6nAOBZ+jddPpPPAmGgrPDEfAUS1pG5hAYvhAITBAlZxiUoRUqjU6m5RIDhOi7iIUF9RFYaqIIP9MlJpABCOCAUHJ0eDzm1oXAAGSKyHtUx9fGzNSacjaPWq6Ea6gI2Z9EUyVRrXV6gC+DRtVu0RBgxuYSnRIzm6O06h0ACpIdlfr9jExSQyOkxTP5GjkPFZBv9bKIDYSmbNpH04ABNFD+CV+nR2636kby+BETCddTlyo27w0zr4HycfC6L0lvUjLH7baHY5Jas7BRMI7AE42uYSUXed6pkY6HtMDulnQruCrCg2oA)
+
+## useImperativeHandle
+
+_Não temos muito ainda sobre esse tema, [há uma discussão nas issues da versão em inglês](https://github.com/typescript-cheatsheets/react/issues/106).Por favor, contribua se puder!_
+
+```tsx
+type ListProps<ItemType> = {
+  items: ItemType[];
+  innerRef?: React.Ref<{ scrollToItem(item: ItemType): void }>;
+};
+
+function List<ItemType>(props: ListProps<ItemType>) {
+  useImperativeHandle(props.innerRef, () => ({
+    scrollToItem() {},
+  }));
+  return null;
+}
+```
+
+## Custom Hooks
+
+Se você estiver retornando um array em seu Custom Hook (hooks customizados), você vai querer evitar a inferência de tipo, pois o TypeScript irá inferir um tipo de união (quando, na verdade, você quer tipos diferentes em cada posição do array). Em vez disso, use [const assertions do TypeScript 3.4](https://devblogs.microsoft.com/typescript/announcing-typescript-3-4/#const-assertions):
+If you are returning an array in your Custom Hook, you will want to avoid type inference as TypeScript will infer a union type (when you actually want different types in each position of the array). Instead, use [TS 3.4 const assertions](https://devblogs.microsoft.com/typescript/announcing-typescript-3-4/#const-assertions):
+
+```tsx
+export function useLoading() {
+  const [isLoading, setState] = React.useState(false);
+  const load = (aPromise: Promise<any>) => {
+    setState(true);
+    return aPromise.finally(() => setState(false));
+  };
+  return [isLoading, load] as const; // infere [boolean, typeof load] ao invés de (boolean | typeof load)[]
+}
+```
+
+[Vejo em TypeScript Playground](https://www.typescriptlang.org/play/?target=5&jsx=2#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCpAD0ljkwFcA7DYCZuRgZyQBkIKACbBmAcwAUASjgBvCnDhoO3eAG1g3AcNFiANHF4wAyjBQwkAXTgBeRMRgA6HklPmkEzCgA2vKQG4FJRV4b0EhWzgJFAAFHBBNJAAuODjcRIAeFGYATwA+GRs8uSDFIzcLCRgoRiQA0rgiGEYoTlj4xMdMUR9vHIlpW2Lys0qvXzr68kUAX0DpxqRm1rgNLXDdAzDhaxRuYOZVfzgAehO4UUwkKH21ACMICG9UZgMYHLAkCEw4baFrUSqVARb5RB5PF5wAA+cHen1BfykaksFBmQA)
+
+Dessa forma, quando você desestrutura (desctructure), você obtém os tipos certos com base na posição de desestruturação.
+
+<detalhes>
+<summary><b>Alternativa: definir um tipo de retorno de tupla (tuple)</b></summary>
+
+Se você está [tendo problemas com const assertions](https://github.com/babel/babel/issues/9800), você também pode declarar ou definir os tipos do retorno da função:
+
+```tsx
+export function useLoading() {
+  const [isLoading, setState] = React.useState(false);
+  const load = (aPromise: Promise<any>) => {
+    setState(true);
+    return aPromise.finally(() => setState(false));
+  };
+  return [isLoading, load] as [
+    boolean,
+    (aPromise: Promise<any>) => Promise<any>
+  ];
+}
+```
+
+Uma função auxiliar que define o tipe de tuplas automaticamente também pode ser útil se você escrever muitos custom hooks:
+
+```tsx
+function tuplify<T extends any[]>(...elements: T) {
+  return elements;
+}
+
+function useArray() {
+  const numberValue = useRef(3).current;
+  const functionValue = useRef(() => {}).current;
+  return [numberValue, functionValue]; // o tipo fica (number | (() => void))[]
+}
+
+function useTuple() {
+  const numberValue = useRef(3).current;
+  const functionValue = useRef(() => {}).current;
+  return tuplify(numberValue, functionValue); // o tipo fica [number, () => void]
+}
+```
+
+</details>
+
+Saiba que a equipe do React recomenda que custom hooks que retornam mais de dois valores usem objetos em vez de tuplas.
+
+## Leituras sobre Hooks + TypeScript (em inglês):
+
+- https://medium.com/@jrwebdev/react-hooks-in-typescript-88fce7001d0d
+- https://fettblog.eu/typescript-react/hooks/#useref
+
+Se você estiver escrevendo uma biblioteca de Hooks, não esqueça que você também deve expor os tipos para os usuários utilizarem.
+
+## Exemploes de bibliotecas React Hooks + TypeScript:
+
+- https://github.com/mweststrate/use-st8
+- https://github.com/palmerhq/the-platform
+- https://github.com/sw-yx/hooks
+
+[Tem algo a acrescentar? - link para o repositório original](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/new).
+
+<!--END-SECTION:hooks-->
