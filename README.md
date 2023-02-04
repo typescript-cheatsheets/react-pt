@@ -40,14 +40,14 @@ Se você perceber algo de errado ou faltando, por favor abra uma [issue](https:/
   - Responde às perguntas mais frequentes.
   - Não cobre a lógica de tipo genérico em detalhes. Em vez disso, preferimos ensinar técnicas de solução de problemas simples para iniciantes.
   - O objetivo é se familiarizar com TS sem precisar aprender _muito_ sobre TS.
-- **Cheatsheet Avançado** ([`/AVANÇADO.md`](https://react-typescript-cheatsheet.netlify.app/docs/advanced/intro)) ajuda a mostrar e explicar o uso avançado de tipos genéricos para pessoas que escrevem utilitários/funções/props de renderização/componentes de ordem superior (HOCs) reutilizáveis ​​e **bibliotecas** TS+React.
+- **Cheatsheet Avançado** ([`/AVANÇADO.md`](https://react-typescript-cheatsheet.netlify.app/docs/advanced)) ajuda a mostrar e explicar o uso avançado de tipos genéricos para pessoas que escrevem utilitários/funções/props de renderização/componentes de ordem superior (HOCs) reutilizáveis ​​e **bibliotecas** TS+React.
   - Possui dicas e truques diversos para usuários profissionais.
   - Conselhos para contribuir com DefinitelyTyped.
   - O Objetivo é tirar _total vantagem_ sobre o TypeScript.
-- **Cheatsheet de migração** ([`/MIGRANDO.md`](https://react-typescript-cheatsheet.netlify.app/docs/migration/intro)) ajuda a reunir conselhos para a migração incremental de grandes bases de código de JS ou Flow, **de pessoas que já fizeram isso**.
+- **Cheatsheet de migração** ([`/MIGRANDO.md`](https://react-typescript-cheatsheet.netlify.app/docs/migration)) ajuda a reunir conselhos para a migração incremental de grandes bases de código de JS ou Flow, **de pessoas que já fizeram isso**.
   - Nós não tentamos convencer as pessoas a mudar, apenas ajudar as pessoas que já decidiram isso.
   - ⚠️ Esta é uma nova cheatsheet, toda ajuda é bem-vinda.
-- **Cheatsheet de HOCs** ([`/HOC.md`](https://react-typescript-cheatsheet.netlify.app/docs/hoc/intro)) especificamente ensina as pessoas a escrever HOCs com a ajuda de exemplos.
+- **Cheatsheet de HOCs** ([`/HOC.md`](https://react-typescript-cheatsheet.netlify.app/docs/hoc)) especificamente ensina as pessoas a escrever HOCs com a ajuda de exemplos.
   - Familiaridade com [Genéricos](https://www.typescriptlang.org/docs/handbook/generics.html) é necessário.
   - ⚠️ Esta é uma nova cheatsheet, toda a assistência é bem-vinda.
 
