@@ -74,8 +74,10 @@ Se você perceber algo de errado ou faltando, por favor abra uma [issue](https:/
   - [useEffect](#useeffect)
   - [useRef](#useref)
   - [useImperativeHandle](#useimperativehandle)
-  - [Hooks Customizados](#custom-hooks)
-  - [Componentes de Classe](#class-components)
+  - [Hooks Customizados](#hooks-customizados)
+  - [Leituras sobre Hooks + TypeScript](#leituras-sobre-hooks--typescript)
+  - [Exemplos de bibliotecas de Hooks + TypeScript](#exemplos-de-bibliotecas-de-hooks--typescript)
+  - [Componentes de Classe](#componentes-de-classe)
   - [Talvez você não precise do `defaultProps`](#you-may-not-need-defaultprops)
   - ["Tipando" `defaultProps`](#typing-defaultprops)
   - [Consumindo Props de um Componente com defaultProps](#consuming-props-of-a-component-with-defaultprops)
@@ -557,7 +559,7 @@ function List<ItemType>(props: ListProps<ItemType>) {
 }
 ```
 
-## Custom Hooks
+## Hooks Customizados
 
 Se você estiver retornando um array em seu Custom Hook (hooks customizados), você vai querer evitar a inferência de tipo, pois o TypeScript irá inferir um tipo de união (quando, na verdade, você quer tipos diferentes em cada posição do array). Em vez disso, use [const assertions do TypeScript 3.4](https://devblogs.microsoft.com/typescript/announcing-typescript-3-4/#const-assertions):
 
@@ -619,14 +621,14 @@ function useTuple() {
 
 Saiba que a equipe do React recomenda que custom hooks que retornam mais de dois valores usem objetos em vez de tuplas.
 
-## Leituras sobre Hooks + TypeScript (em inglês):
+## Leituras sobre Hooks + TypeScript:
 
 - https://medium.com/@jrwebdev/react-hooks-in-typescript-88fce7001d0d
 - https://fettblog.eu/typescript-react/hooks/#useref
 
 Se você estiver escrevendo uma biblioteca de Hooks, não esqueça que você também deve expor os tipos para os usuários utilizarem.
 
-## Exemploes de bibliotecas React Hooks + TypeScript:
+## Exemplos de bibliotecas de Hooks + TypeScript:
 
 - https://github.com/mweststrate/use-st8
 - https://github.com/palmerhq/the-platform
@@ -635,3 +637,178 @@ Se você estiver escrevendo uma biblioteca de Hooks, não esqueça que você tam
 [Tem algo a acrescentar? - link para o repositório original](https://github.com/typescript-cheatsheets/react-typescript-cheatsheet/issues/new).
 
 <!--END-SECTION:hooks-->
+
+<!--START-SECTION:class-components-->
+
+## Componentes de Classe
+
+Dentro do TypeScript, `React.Component` é um tipo genérico (também conhecido como `React.Component<PropType, StateType>`), portanto, você pode fornecer os tipos para as props e o state através dos argumentos de tipo `PropType` e `StateType` respectivamente:
+
+```tsx
+type MyProps = {
+  // também é possível utilizar `interface`
+  message: string;
+};
+type MyState = {
+  count: number; // desta forma
+};
+class App extends React.Component<MyProps, MyState> {
+  state: MyState = {
+    // opcionalmente, você também pode passar o tipo aqui, o que melhora a inferência de tipo
+    count: 0,
+  };
+  render() {
+    return (
+      <div>
+        {this.props.message} {this.state.count}
+      </div>
+    );
+  }
+}
+```
+
+[Veja no TypeScript Playground](https://www.typescriptlang.org/play/?jsx=2#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCmATzCTgFlqAFHMAZzgF44BvCuHAD0QuAFd2wAHYBzOAANpMJFEzok8uME4oANuwhwIAawFwQSduxQykALjjsYUaTIDcFAL4fyNOo2oAZRgUZW4+MzQIMSkYBykxEAAjFTdhUV1gY3oYAAttLx80XRQrOABBMDA4JAAPZSkAE05kdBgAOgBhXEgpJFiAHiZWCA4AGgDg0KQAPgjyQSdphyYpsJ5+BcF0ozAYYAgpPUckKKa4FCkpCBD9w7hMaDgUmGUoOD96aUwVfrQkMyCKIxOJwAAMZm8ZiITRUAAoAJTzbZwIgwMRQKRwOGA7YDRrAABuM1xKN4eW07TAbHY7QsVhsSE8fAptKWynawNinlJcAGQgJxNxCJ8gh55E8QA)
+
+Não esqueça que é possível exportar/importar/estender (export/import/extend) esses tipos/interfaces para reúso em outras partes do sistema.
+
+<details>
+<summary><b>Porque anotar o tipo de <code>state</code> state?</b></summary>
+
+Não é estritamente necessário anotar a propriedade `state`, mas permite uma melhor inferência de tipo ao acessar `this.state` e também inicializar o estado.
+
+Isso ocorre porque eles funcionam de duas maneiras diferentes, o segundo argumento de tipo genérico permitirá que `this.setState()` funcione corretamente, porque esse método vem da classe base, mas inicializar `state` dentro do componente substitui a implementação base, então você tem que ter certeza de dizer ao compilador que não está realmente fazendo nada diferente.
+
+[Veja @ferdaber discutindo o assunto aqui](https://github.com/typescript-cheatsheets/react/issues/57).
+
+</details>
+
+<details>
+  <summary><b>Não é necessário utilizar <code>readonly</code></b></summary>
+
+As vezes, exemplos de código utilizam `readonly` para marcar props e state imutáveis:
+
+```tsx
+type MyProps = {
+  readonly message: string;
+};
+type MyState = {
+  readonly count: number;
+};
+```
+
+Isso não é necessário pois `React.Component<P,S>` já os define como imutáveis. ([Veja a discussão neste PR](https://github.com/DefinitelyTyped/DefinitelyTyped/pull/26813))
+
+</details>
+
+**Métodos de Classe**: Faça normalmente, mas lembre-se de que quaisquer argumentos para suas funções também precisam ter seus tipos definitos:
+
+```tsx
+class App extends React.Component<{ message: string }, { count: number }> {
+  state = { count: 0 };
+  render() {
+    return (
+      <div onClick={() => this.increment(1)}>
+        {this.props.message} {this.state.count}
+      </div>
+    );
+  }
+  increment = (amt: number) => {
+    // desta forma
+    this.setState((state) => ({
+      count: state.count + amt,
+    }));
+  };
+}
+```
+
+[Veja no TypeScript Playground](https://www.typescriptlang.org/play/?jsx=2#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCtAGxQGc64BBMMOJADxiQDsATRsnQwAdAGFckHrxgAeAN5wQSBigDmSAFxw6MKMB5q4AXwA0cRWggBXHjG09rIAEZIoJgHwWKcHTBTccAC8FnBWtvZwAAwmANw+cET8bgAUAJTe5L6+RDDWUDxwKQnZcLJ8wABucBA8YtTAaADWQfLpwV4wABbAdCIGaETKdikAjGnGHiWlFt29ImA4YH3KqhrGsz19ugFIIuF2xtO+sgD0FZVTWdlp8ddH1wNDMsFFKCCRji5uGUFe8tNTqc4A0mkg4HM6NNISI6EgYABlfzcFI7QJ-IoA66lA6RNF7XFwADUcHeMGmxjStwSxjuxiAA)
+
+**Propriedades de Classe**: Se você precisar declarar as propriedades da classe para utilizar posteriormente, apenas declare como `state`, mas sem atribuição:
+
+```tsx
+class App extends React.Component<{
+  message: string;
+}> {
+  pointer: number; // desta forma
+  componentDidMount() {
+    this.pointer = 3;
+  }
+  render() {
+    return (
+      <div>
+        {this.props.message} and {this.pointer}
+      </div>
+    );
+  }
+}
+```
+
+[Veja TypeScript Playground](https://www.typescriptlang.org/play/?jsx=2#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCtAGxQGc64BBMMOJADxiQDsATRsnQwAdAGFckHrxgAeAN4U4cEEgYoA5kgBccOjCjAeGgNwUAvgD44i8sshHuUXTwCuIAEZIoJuAHo-OGpgAGskOBgAC2A6JTg0SQhpHhgAEWA+AFkIVxSACgBKGzjlKJiRBxTvOABeOABmMzs4cziifm9C4ublIhhXKB44PJLlOFk+YAA3S1GxmzK6CpwwJdV1LXM4FH4F6KXKp1aesdk-SZnRgqblY-MgA)
+
+[Tem algo a acrescentar? Crie uma issue no repositório original](https://github.com/typescript-cheatsheets/react/issues/new).
+
+#### Definindo o tipo de getDerivedStateFromProps
+
+Antes de começar a utilizar `getDerivedStateFromProps`, consulte a [documentação](https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops) e o artigo [You Probably Don't Need Derived State](https://legacy.reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html). O `state` derivado (Derived State) pode ser implementado usando hooks que também podem ajudar a configurar a memoização (muitas vezes as pessoas irão se referir a isso como "memorização", pois a memoização é uma técnica de otimização de algoritmos por memorização de resultados, mas em geral os artigos acadêmicos e livros técnicos utilizam "memoização", do inglês `memoization`).
+
+Aqui estão algumas maneiras pelas quais você pode tipar `getDerivedStateFromProps`
+
+1. Se você definiu o tipo do seu `state` derivado explicitamente e deseja certificar-se de que o valor de retorno de `getDerivedStateFromProps` está em conformidade com ele.
+
+```tsx
+class Comp extends React.Component<Props, State> {
+  static getDerivedStateFromProps(
+    props: Props,
+    state: State
+  ): Partial<State> | null {
+    //
+  }
+}
+```
+
+2. Quando você deseja que o valor de retorno da função determine seu `state`
+
+```tsx
+class Comp extends React.Component<
+  Props,
+  ReturnType<typeof Comp["getDerivedStateFromProps"]>
+> {
+  static getDerivedStateFromProps(props: Props) {}
+}
+```
+
+3. Quando você deseja um `state` derivado com outros campos e memoização
+
+```tsx
+type CustomValue = any;
+interface Props {
+  propA: CustomValue;
+}
+interface DefinedState {
+  otherStateField: string;
+}
+type State = DefinedState & ReturnType<typeof transformPropsToState>;
+function transformPropsToState(props: Props) {
+  return {
+    savedPropA: props.propA, // salvar para memoização
+    derivedState: props.propA,
+  };
+}
+class Comp extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      otherStateField: "123",
+      ...transformPropsToState(props),
+    };
+  }
+  static getDerivedStateFromProps(props: Props, state: State) {
+    if (isEqual(props.propA, state.savedPropA)) return null;
+    return transformPropsToState(props);
+  }
+}
+```
+
+[Veja em TypeScript Playground](https://www.typescriptlang.org/play/?jsx=2#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoUSWOYAZwFEBHAVxQBs5tcD2IATFHQAWAOnpJWHMuQowAnmCRwAwizoxcANQ4tlAXjgoAdvIDcFYMZhIomdMoAKOMHTgBvCnDhgXAQQAuVXVNEB12PQtyAF9La1t7NGUAESRMKyR+AGUYFBsPLzgIGGFbHLykADFgJHZ+II0oKwBzKNjyBSU4cvzDVPTjTJ7lADJEJBgWKGMAFUUkAB5OpAhMOBgoEzpMaBBnCFcZiGGAPijMFmMMYAhjdc3jbd39w+PcmwAKXwO6IJe6ACUBXI3iIk2mwO83joKAAbpkXoEfC46KJvmA-AAaOAAehxcBh8K40DgICQIAgwAAXnkbsZCt5+LZgPDsu8kEF0aj0X5CtE2hQ0OwhG4VLgwHAkAAPGzGfhuZDoGCiRxTJBi8C3JDWBb-bGnSFwNC3RosDDQL4ov4ooGeEFQugsJRQS0-AFRKHrYT0UQaCpwQx2z3eYqlKDDaq1epwABEAEYAEwAZhjmIZUNEmY2Wx2UD2KKOw1drgB6f5fMKfpgwDQcGaE1STVZEZw+Z+xd+cD1BPZQWGtvTwDWH3ozDY7A7aP82KrSF9cIR-gBQLBUzuxhY7HYHqhq4h2ceubbryLXPdFZiQA)
+
+<!--END-SECTION:class-components-->
