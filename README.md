@@ -74,8 +74,10 @@ Se você perceber algo de errado ou faltando, por favor abra uma [issue](https:/
   - [useEffect](#useeffect)
   - [useRef](#useref)
   - [useImperativeHandle](#useimperativehandle)
-  - [Hooks Customizados](#custom-hooks)
-  - [Componentes de Classe](#class-components)
+  - [Hooks Customizados](#hooks-customizados)
+  - [Leituras sobre Hooks + TypeScript](#leituras-sobre-hooks--typescript)
+  - [Exemplos de bibliotecas de Hooks + TypeScript](#exemplos-de-bibliotecas-de-hooks--typescript)
+  - [Componentes de Classe](#componentes-de-classe)
   - [Talvez você não precise do `defaultProps`](#you-may-not-need-defaultprops)
   - ["Tipando" `defaultProps`](#typing-defaultprops)
   - [Consumindo Props de um Componente com defaultProps](#consuming-props-of-a-component-with-defaultprops)
@@ -557,7 +559,7 @@ function List<ItemType>(props: ListProps<ItemType>) {
 }
 ```
 
-## Custom Hooks
+## Hooks Customizados
 
 Se você estiver retornando um array em seu Custom Hook (hooks customizados), você vai querer evitar a inferência de tipo, pois o TypeScript irá inferir um tipo de união (quando, na verdade, você quer tipos diferentes em cada posição do array). Em vez disso, use [const assertions do TypeScript 3.4](https://devblogs.microsoft.com/typescript/announcing-typescript-3-4/#const-assertions):
 
@@ -619,14 +621,14 @@ function useTuple() {
 
 Saiba que a equipe do React recomenda que custom hooks que retornam mais de dois valores usem objetos em vez de tuplas.
 
-## Leituras sobre Hooks + TypeScript (em inglês):
+## Leituras sobre Hooks + TypeScript:
 
 - https://medium.com/@jrwebdev/react-hooks-in-typescript-88fce7001d0d
 - https://fettblog.eu/typescript-react/hooks/#useref
 
 Se você estiver escrevendo uma biblioteca de Hooks, não esqueça que você também deve expor os tipos para os usuários utilizarem.
 
-## Exemploes de bibliotecas React Hooks + TypeScript:
+## Exemplos de bibliotecas de Hooks + TypeScript:
 
 - https://github.com/mweststrate/use-st8
 - https://github.com/palmerhq/the-platform
@@ -638,7 +640,7 @@ Se você estiver escrevendo uma biblioteca de Hooks, não esqueça que você tam
 
 <!--START-SECTION:class-components-->
 
-#### Componentes de Classe
+## Componentes de Classe
 
 Dentro do TypeScript, `React.Component` é um tipo genérico (também conhecido como `React.Component<PropType, StateType>`), portanto, você pode fornecer os tipos para as props e o state através dos argumentos de tipo `PropType` e `StateType` respectivamente:
 
